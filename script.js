@@ -1,31 +1,30 @@
-let card = document.querySelector(".flip-card");
+const card = document.querySelector(".flip-card");
 function addClass() {
     card.classList.toggle("active");
 }
 card.addEventListener("click", addClass);
 
-let cardFront = document.querySelector("#card-front");
-let cardBack = document.querySelector("#card-back");
-let example = document.querySelector(".flip-card-back span");
-let answer = document.querySelector(".flip-card-back h1")
+const cardFront = document.querySelector("#card-front");
+const cardBack = document.querySelector("#card-back");
+const example = document.querySelector(".flip-card-back span");
+const answer = document.querySelector(".flip-card-back h1")
 
-let index = 0; //Math.floor(Math.random() * 5);
+let index = 0;
 
-let foreignWords = ['banan', 'dog', 'house', 'network', 'lemon'];
-let explanation = ['banan improve mood', 'dog is the best friend people', 'house is place where you can living', 'network is application such as instagram', 'lemon is rich vitamins C'];
-let translatedWords = ['банан', 'собака', 'дом', 'сеть', 'лимон'];
+const foreignWords = ['banan', 'dog', 'house', 'network', 'lemon'];
+const explanations = ['banan improve mood', 'dog is the best friend people', 'house is place where you can living', 'network is application such as instagram', 'lemon is rich vitamins C'];
+const translatedWords = ['банан', 'собака', 'дом', 'сеть', 'лимон'];
 
 function setNewWord(wordIndex) {
     cardFront.textContent = foreignWords[wordIndex];
-    example.textContent = explanation[wordIndex];
+    example.textContent = explanations[wordIndex];
     answer.textContent = translatedWords[wordIndex];
 }
 
 setNewWord(index);
 
-
-let buttonBack = document.querySelector("#back");
-let buttonNext = document.querySelector("#next");
+const buttonBack = document.querySelector("#back");
+const buttonNext = document.querySelector("#next");
 
 
 buttonNext.addEventListener("click", function () {
@@ -50,51 +49,38 @@ buttonBack.addEventListener("click", function () {
 
 });
 
-let currentWord = document.querySelector("#current-word");
-let progress = document.querySelector("#words-progress");
+const currentWord = document.querySelector("#current-word");
+const progress = document.querySelector("#words-progress");
 
 function changeNumber() {
 
-    if (index == 0) {
-        currentWord.textContent = 1;
-        progress.setAttribute("value", "20");
-    } else if (index == 1) {
-        currentWord.textContent = 2;
-        progress.setAttribute("value", "40");
-    } else if (index == 2) {
-        currentWord.textContent = 3;
-        progress.setAttribute("value", "60");
-    } else if (index == 3) {
-        currentWord.textContent = 4;
-        progress.setAttribute("value", "80");
-    } else if (index == 4) {
-        currentWord.textContent = 5;
-        progress.setAttribute("value", "100");
-    }
+    currentWord.textContent = index + 1;
+    progress.setAttribute("value", (index + 1) * 20);
+
 }
 
 buttonNext.addEventListener("click", changeNumber);
 buttonBack.addEventListener("click", changeNumber);
 
-let words;
-let element;
 
-let test = document.querySelector("#exam");
-test.addEventListener("click", startTest)
+const test = document.querySelector("#exam");
+const examCards = document.querySelector(".card");
+const container = document.querySelector(".content");
+const containerCard = document.querySelector("#exam-cards");
+const mixedWords = foreignWords.concat(translatedWords).sort((a, b) => 0.5 - Math.random());
 
-let item = Math.floor(Math.random() * 5);
-let examCards = document.querySelector(".card");
-let container = document.querySelector(".content");
-let containerCard = document.querySelector("#exam-cards");
-let mixedWords = foreignWords.concat(translatedWords);
+const examProgress = document.querySelector("#exam-progress");
+examProgress.setAttribute("value", "0");
+const correctlyAnswered = document.querySelector(".hidden h3")
+
 function startTest() {
+
     container.querySelector('.study-cards').style.display = "none";
     let studyMode = document.querySelector("#study-mode");
     studyMode.style.display = "none";
     let fragment = new DocumentFragment();
-    let fragment2 = new DocumentFragment();
 
-    let mixedWords = foreignWords.concat(translatedWords);
+
     for (let i = 0; i < mixedWords.length; i++) {
 
         let element = document.createElement("div");
@@ -104,52 +90,79 @@ function startTest() {
 
 
         let words = document.createElement("h3");
-        fragment2.append(words);
-        element.append(fragment2);
-
-
+        fragment.append(words);
+        element.append(fragment);
         words.textContent = mixedWords[i];
-
+        
     }
 
-
-
-    let examProgress = document.querySelector("#exam-progress");
-    examProgress.setAttribute("value", "0");
-
+   
+    const sidebarMenu = document.querySelector(".sidebar")
+    sidebarMenu.append(correctlyAnswered);
+    sidebarMenu.append(examProgress);
+    const correctPercent = document.querySelector("#correct-percent");
+    correctlyAnswered.append(correctPercent);
+   
 }
 
 test.addEventListener("click", startTest);
 
+const translations = {
+    banan: "банан",
+    "банан": "banan",
+    dog: "собака",
+    "собака": "dog",
+    house: "дом",
+    "дом": "house",
+    network: "сеть",
+    "сеть" : "network",
+    lemon: "лимон",
+    "лимон": "lemon"
+};
 
+let previousCard = null;
+const totalPairCount = 5;
+let currentPairCount = 0;
 
-function chooseCard(evt) {
-    evt.target.closest(".card").classList.add('correct');
+function makeMatch(evt) {
 
-    if (evt.target.textContent == mixedWords[0]) {
-        evt.target.classList.add("fade-out");
-    } else if (evt.target.textContent == mixedWords[1]) {
-            evt.target.classList.add("fade-out");
-    } else if (evt.target.textContent == mixedWords[2]) {
-        evt.target.classList.add("fade-out");
-    }else if (evt.target.textContent == mixedWords[3]) {
-            evt.target.classList.add("fade-out");
-    } else if (evt.target.textContent == mixedWords[3]) {
-        evt.target.classList.add("fade-out");
-    } else if (evt.target.textContent == mixedWords[4]) {
-        evt.target.classList.add("fade-out");
-  }
+    const card = evt.target.closest(".card");
+    
+    if (previousCard == null){
+        previousCard = card;
+        card.classList.add('correct');
+    } else {
+        const currentCardText = card.querySelector('h3').textContent;
+        const previousCardText = previousCard.querySelector('h3').textContent;
+        const translation = translations[currentCardText];
+          
+        if (translation == previousCardText) {
+            card.classList.add("fade-out");
+            previousCard.classList.add("fade-out");
+            previousCard = null;
+
+            currentPairCount++;
+            examProgress.setAttribute("value", 20 * currentPairCount);
+            correctlyAnswered.textContent= `Правильно отвечено ${20 * currentPairCount}%`;
+        
+            if(currentPairCount == totalPairCount) {
+                setTimeout(() => {
+                    alert('Все слова выучены, ты молодец!');
+                }, 300);
+            }
+        } else {
+            card.classList.add("wrong");
+
+            setTimeout(() => {
+                card.classList.remove("wrong");
+                previousCard.classList.remove('correct');
+                previousCard = null;
+            }, 500);
+            
+        }
+    }
+    
 }
 
+containerCard.addEventListener("click", makeMatch);
 
-
-containerCard.addEventListener("click", chooseCard);
-
-
-//const object = {
-    //     banan: "банан",
-    //     dog: "собака",
-    //     house: "дом",
-    //     network: "сеть",
-    //     lemon: "лимон"
-    // }
