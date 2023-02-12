@@ -20,14 +20,12 @@ function setNewWord(wordIndex) {
     example.textContent = explanations[wordIndex];
     answer.textContent = translatedWords[wordIndex];
 }
-
 setNewWord(index);
 
 const buttonBack = document.querySelector("#back");
 const buttonNext = document.querySelector("#next");
 
-
-buttonNext.addEventListener("click", function () {
+function returnPrevious () {
     if (index == foreignWords.length - 1) {
         buttonNext.setAttribute("disabled", "disabled")
     } else {
@@ -36,9 +34,10 @@ buttonNext.addEventListener("click", function () {
         buttonBack.removeAttribute("disabled", "disabled");
     }
 
-});
+};
+buttonNext.addEventListener("click", returnPrevious)
 
-buttonBack.addEventListener("click", function () {
+function returnNext() {
     if (index == 0) {
         buttonBack.setAttribute("disabled", "disabled");
     } else {
@@ -47,21 +46,19 @@ buttonBack.addEventListener("click", function () {
         buttonNext.removeAttribute("disabled", "disabled");
     }
 
-});
+};
+buttonBack.addEventListener("click", returnNext)
 
 const currentWord = document.querySelector("#current-word");
 const progress = document.querySelector("#words-progress");
 
 function changeNumber() {
-
     currentWord.textContent = index + 1;
     progress.setAttribute("value", (index + 1) * 20);
-
 }
 
 buttonNext.addEventListener("click", changeNumber);
 buttonBack.addEventListener("click", changeNumber);
-
 
 const test = document.querySelector("#exam");
 const examCards = document.querySelector(".card");
